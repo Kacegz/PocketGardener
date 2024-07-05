@@ -1,0 +1,23 @@
+{
+  "name": "pocketgardener",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "start": "node app.js",
+    "register": "node commands.js",
+    "dev": "nodemon app.js"
+  },
+  "author": "Kacegz",
+  "license": "ISC",
+  "dependencies": {
+    "discord-interactions": "^4.0.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  }
+}
