@@ -1,23 +1,23 @@
 {
-  "name": "pocketgardener",
-  "version": "0.0.1",
-  "description": "This is Discord Bot that allows you grow your own **Pocket Garden**.",
-  "main": "main.js",
-  "scripts": {
-    "start": "node src/main.js",
-    "commands": "node src/deploy-commands.js",
-    "dev": "nodemon src/main.js"
-  },
-  "author": "",
-  "license": "Apache-2.0",
-  "dependencies": {
-    "@prisma/client": "^5.17.0",
-    "discord.js": "^14.15.3",
-    "dotenv": "^16.4.5"
-  },
-  "devDependencies": {
-    "@flydotio/dockerfile": "^0.5.7",
-    "nodemon": "^3.1.4",
-    "prisma": "^5.17.0"
-  }
+    "name": "pocketgardener",
+    "version": "0.0.1",
+    "description": "This is Discord Bot that allows you grow your own **Pocket Garden**.",
+    "main": "main.js",
+    "scripts": {
+        "start": "node src/main.js",
+        "commands": "node src/deploy-commands.js",
+        "dev": "nodemon src/main.js"
+    },
+    "author": "",
+    "license": "Apache-2.0",
+    "dependencies": {
+        "@prisma/client": "^5.17.0",
+        "discord.js": "^14.15.3",
+        "dotenv": "^16.4.5"
+    },
+    "devDependencies": {
+        "@flydotio/dockerfile": "^0.5.7",
+        "nodemon": "^3.1.4",
+        "prisma": "^5.17.0"
+    }
 }
