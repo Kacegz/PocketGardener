@@ -13,11 +13,11 @@ module.exports = {
         for (let i = 0; i < field.crops.length; i++) {
             const crop = field.crops[i];
             const icon = crop.spiecies.icon;
-            fieldString += icon + ' ';
+            fieldString += icon + '';
             if (i % 5 == 4) {
                 fieldString += '\n';
             }
         }
-        await interaction.reply({ content: fieldString, ephemeral: true });
+        await interaction.reply({ content: fieldString });
     },
 };

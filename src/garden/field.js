@@ -18,7 +18,12 @@ module.exports = {
                 include: { crops: { include: { spiecies: true } } },
             });
         }
-        console.log(field);
         return field;
+    },
+    plantCrop: async (cropId, newSpieciesId) => {
+        await db.crop.update({
+            where: { id: cropId },
+            data: { spiecesId: newSpieciesId },
+        });
     },
 };
