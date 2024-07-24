@@ -8,16 +8,16 @@ async function sendData() {
         name: "Empty",
         icon: "🟫",
       },
-      // {
-      //     id: 1,
-      //     name: "Carrot",
-      //     icon: "🥕"
-      // },
-      // {
-      //     id: 2,
-      //     name: "Potato",
-      //     icon: "🥔"
-      // },
+      {
+        id: 1,
+        name: "Carrot",
+        icon: "🥕",
+      },
+      {
+        id: 2,
+        name: "Potato",
+        icon: "🥔",
+      },
     ],
   });
 
