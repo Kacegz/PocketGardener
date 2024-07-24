@@ -4,6 +4,7 @@ const path = require('node:path');
 require('dotenv').config();
 
 const clientId = process.env.APP_ID
+const token = process.env.DISCORD_TOKEN
 
 const commands = [];
 // Grab all the command folders from the commands directory you created earlier

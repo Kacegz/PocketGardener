@@ -1,0 +1,39 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "sqlite"
+    url      = env("DATABASE_URL")
+}
+
+model User {
+    id Int @id @default(autoincrement())
+    discord_id String @unique
+    field Field?
+}
+
+model Field {
+    id Int @id @default(autoincrement())
+    user User @relation(fields: [userId], references: [id])
+    userId Int @unique
+    crops Crop[]
+}
+
+model Crop {
+    id Int @id @default(autoincrement())
+    field Field @relation(fields: [fieldId], references: [id])
+    fieldId Int
+    spiecies Spieces @relation(fields: [spiecesId], references: [id])
+    spiecesId Int
+}
+
+model Spieces {
+    id Int @id @default(autoincrement())
+    name String
+    icon String
+    crops Crop[]
+}
