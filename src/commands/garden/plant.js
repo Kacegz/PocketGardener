@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require('discord.js');
 const { getOrCreateUser } = require('../../garden/user');
 const { getOrCreateField, plantCrop } = require('../../garden/field');
+let previousMessage = null;
 module.exports = {
     data: new SlashCommandBuilder().setName('plant').setDescription('Plants a crop on your field'),
     async execute(interaction) {
@@ -39,11 +40,14 @@ module.exports = {
             .setDisabled(true);
         const next = new ButtonBuilder().setCustomId('next').setEmoji('👉').setStyle(ButtonStyle.Primary);
         const lastRow = new ActionRowBuilder().addComponents(previous, blank1, cancel, blank2, next);
-
+        if (previousMessage) {
+            await previousMessage.delete();
+        }
         const response = await interaction.reply({
             content: `**Choose a field to plant a crop on**`,
             components: [...rows, lastRow],
         });
+        previousMessage = response;
         const collectorFilter = (i) => i.user.id === interaction.user.id;
         try {
             const confirmation = await response.awaitMessageComponent({
@@ -56,6 +60,7 @@ module.exports = {
                     content: `Cancelled planting a crop`,
                     components: [],
                 });
+                previousMessage = null;
             } else if (confirmation.customId === 'previous') {
                 await confirmation.update({
                     content: 'Going back to previous field...',
@@ -74,6 +79,7 @@ module.exports = {
                     content: `Successfully planted crop ${spiecesId} on field ${confirmation.customId}`,
                     components: [],
                 });
+                previousMessage = null;
             }
         } catch (e) {
             await interaction.editReply({
