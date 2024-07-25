@@ -1,7 +1,6 @@
 const { SlashCommandBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require('discord.js');
 const { getOrCreateUser } = require('../../garden/user');
 const { getOrCreateField, plantCrop } = require('../../garden/field');
-
 module.exports = {
     data: new SlashCommandBuilder().setName('plant').setDescription('Plants a crop on your field'),
     async execute(interaction) {
@@ -17,6 +16,7 @@ module.exports = {
                 .setCustomId(crop.id.toString())
                 .setEmoji(icon)
                 .setStyle(ButtonStyle.Secondary);
+            //crop.spiecesId == 1 ? button.setDisabled(true) : button.setDisabled(false);      // Uncomment this line to disable already planted crops
             crops.push(button);
             if (i % 5 == 4) {
                 const row = new ActionRowBuilder().addComponents(crops);
@@ -41,7 +41,7 @@ module.exports = {
         const lastRow = new ActionRowBuilder().addComponents(previous, blank1, cancel, blank2, next);
 
         const response = await interaction.reply({
-            content: `Are you sure you want to plant a crop on your field?`,
+            content: `**Choose a field to plant a crop on**`,
             components: [...rows, lastRow],
         });
         const collectorFilter = (i) => i.user.id === interaction.user.id;
@@ -53,12 +53,17 @@ module.exports = {
 
             if (confirmation.customId === 'cancel') {
                 await confirmation.update({
-                    content: `cancelled`,
+                    content: `Cancelled planting a crop`,
+                    components: [],
+                });
+            } else if (confirmation.customId === 'previous') {
+                await confirmation.update({
+                    content: 'Going back to previous field...',
                     components: [],
                 });
             } else if (confirmation.customId === 'next') {
                 await confirmation.update({
-                    content: 'Skipping to another field',
+                    content: 'Going to the next field...',
                     components: [],
                 });
             } else {
@@ -66,13 +71,13 @@ module.exports = {
                 const spiecesId = 1;
                 await plantCrop(cropId, spiecesId);
                 await confirmation.update({
-                    content: `Planting crop ${spiecesId} on field ${confirmation.customId}`,
+                    content: `Successfully planted crop ${spiecesId} on field ${confirmation.customId}`,
                     components: [],
                 });
             }
         } catch (e) {
             await interaction.editReply({
-                content: 'Confirmation not received within 1 minute, cancelling',
+                content: 'Confirmation not received within 1 minute, cancelling 🧑‍🌾',
                 components: [],
             });
         }
