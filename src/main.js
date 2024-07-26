@@ -2,7 +2,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
 const { db } = require('./db.js');
-const { finishCrop } = require('./garden/field.js');
+const { finishCrop, getUserForCrop } = require('./garden/field.js');
 require('dotenv').config();
 
 const token = process.env.DISCORD_TOKEN;
@@ -70,12 +70,18 @@ client.once(Events.ClientReady, async (readyClient) => {
             spiecies: true,
         },
     });
-    stillGrowing.forEach(async (crop) => {
-        const timeLeft = crop.spiecies.growthDuration - (new Date() - crop.plantedTime);
+    stillGrowing.forEach(async (cropp) => {
+        const timeLeft = cropp.spiecies.growthDuration - (new Date() - cropp.plantedTime);
         setTimeout(async () => {
-            await finishCrop(crop.id);
+            await finishCrop(cropp.id);
+            const crop = await getUserForCrop(cropp.id);
+            const user = crop.field.user.discord_id;
+            if (crop.replyChannel) {
+                const channel = client.channels.cache.get(crop.replyChannel);
+                channel.send(`Hello <@${user}>, your ${cropp.spiecies.icon} has finished growing.`);
+            }
         }, timeLeft);
-        console.log(`Set timeout for crop ${crop.id} of ${timeLeft}`);
+        console.log(`Set timeout for crop ${cropp.id} of ${timeLeft}`);
     });
 });
 

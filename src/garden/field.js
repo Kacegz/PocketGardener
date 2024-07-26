@@ -20,16 +20,23 @@ module.exports = {
         }
         return field;
     },
-    plantCrop: async (cropId, newSpieciesId) => {
+    plantCrop: async (cropId, newSpieciesId, channelId) => {
+        console.log(channelId);
         await db.crop.update({
             where: { id: cropId },
-            data: { spiecesId: newSpieciesId, isGrowing: true, plantedTime: new Date() },
+            data: { spiecesId: newSpieciesId, isGrowing: true, plantedTime: new Date(), replyChannel: channelId },
         });
     },
     finishCrop: async (cropId) => {
-        await db.crop.update({
+        return await db.crop.update({
             where: { id: cropId },
             data: { isGrowing: false },
+        });
+    },
+    getUserForCrop: async (cropId) => {
+        return await db.crop.findUnique({
+            where: { id: cropId },
+            include: { field: { include: { user: true } } },
         });
     },
 };

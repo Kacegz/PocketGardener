@@ -125,7 +125,7 @@ module.exports = {
                 const [cropId, spiecesId] = value.split(' ').map((v) => parseInt(v));
 
                 const spieces = await getSpieces(spiecesId);
-                await plantCrop(cropId, spiecesId);
+                await plantCrop(cropId, spiecesId, selectInteraction.channelId);
                 selectInteraction.update({
                     content: `Planted crop ${spiecesId} on field ${cropId}, done in ${spieces.growthDuration / 1000} s`,
                     components: [],
@@ -133,6 +133,10 @@ module.exports = {
 
                 setTimeout(async () => {
                     await finishCrop(cropId);
+                    await selectInteraction.followUp({
+                        content: 'hehe',
+                        ephemeral: true,
+                    });
                 }, spieces.growthDuration);
             });
         } catch (e) {
