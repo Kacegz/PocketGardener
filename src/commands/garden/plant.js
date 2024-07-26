@@ -1,6 +1,15 @@
-const { SlashCommandBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require('discord.js');
+const {
+    SlashCommandBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    ActionRowBuilder,
+    ComponentType,
+    StringSelectMenuBuilder,
+    StringSelectMenuOptionBuilder,
+} = require('discord.js');
 const { getOrCreateUser } = require('../../garden/user');
 const { getOrCreateField, plantCrop } = require('../../garden/field');
+const { getAllSpieces } = require('../../garden/spieces');
 module.exports = {
     data: new SlashCommandBuilder().setName('plant').setDescription('Plants a crop on your field'),
     async execute(interaction) {
@@ -13,7 +22,7 @@ module.exports = {
             const crop = field.crops[i];
             const icon = crop.spiecies.icon;
             const button = new ButtonBuilder()
-                .setCustomId(crop.id.toString())
+                .setCustomId(`crop${crop.id}`)
                 .setEmoji(icon)
                 .setStyle(ButtonStyle.Secondary);
             //crop.spiecesId == 1 ? button.setDisabled(true) : button.setDisabled(false);      // Uncomment this line to disable already planted crops
@@ -41,42 +50,80 @@ module.exports = {
         const lastRow = new ActionRowBuilder().addComponents(previous, blank1, cancel, blank2, next);
         const response = await interaction.reply({
             content: `**Choose a field to plant a crop on**`,
+            //ephemeral: true,
             components: [...rows, lastRow],
         });
-        const collectorFilter = (i) => i.user.id === interaction.user.id;
+
         try {
-            const confirmation = await response.awaitMessageComponent({
+            const collectorFilter = (i) => i.user.id === interaction.user.id;
+
+            const buttonCollector = response.createMessageComponentCollector({
+                componentType: ComponentType.Button,
                 filter: collectorFilter,
                 time: 60_000,
             });
 
-            if (confirmation.customId === 'cancel') {
-                await confirmation.update({
-                    content: `Cancelled planting a crop`,
-                    components: [],
-                });
-            } else if (confirmation.customId === 'previous') {
-                await confirmation.update({
-                    content: 'Going back to previous field...',
-                    components: [],
-                });
-            } else if (confirmation.customId === 'next') {
-                await confirmation.update({
-                    content: 'Going to the next field...',
-                    components: [],
-                });
-            } else {
-                const cropId = parseInt(confirmation.customId);
-                const spiecesId = 1;
+            buttonCollector.on('collect', async (buttonInteraction) => {
+                if (buttonInteraction.customId === 'cancel') {
+                    await buttonInteraction.update({
+                        content: `Cancelled planting a crop`,
+                        components: [],
+                    });
+                } else if (buttonInteraction.customId === 'previous') {
+                    await buttonInteraction.update({
+                        content: 'Going back to previous field...',
+                        components: [],
+                    });
+                } else if (buttonInteraction.customId === 'next') {
+                    await buttonInteraction.update({
+                        content: 'Going to the next field...',
+                        components: [],
+                    });
+                } else if (buttonInteraction.customId.startsWith('crop')) {
+                    const cropId = parseInt(buttonInteraction.customId.slice(4));
+                    const allSpieces = await getAllSpieces();
+                    const spiecesSelectMenu = new StringSelectMenuBuilder()
+                        .setCustomId('spiecesSelectMenu')
+                        .setPlaceholder('Choose a plant to grow!')
+                        .addOptions(
+                            allSpieces
+                                .filter((spiece) => spiece.id != 0)
+                                .map((spiece) => {
+                                    return new StringSelectMenuOptionBuilder()
+                                        .setLabel(spiece.name)
+                                        .setDescription(`50 coins and takes 30 minutes`)
+                                        .setValue(`${cropId} ${spiece.id}`)
+                                        .setEmoji(spiece.icon);
+                                })
+                        );
+
+                    const actionRow = new ActionRowBuilder().addComponents(spiecesSelectMenu);
+
+                    await buttonInteraction.update({
+                        content: `Choose a plant to grow on field ${buttonInteraction.customId}`,
+                        components: [actionRow],
+                    });
+                }
+            });
+
+            const selectCollector = response.createMessageComponentCollector({
+                componentType: ComponentType.StringSelect,
+                filter: collectorFilter,
+                time: 60_000,
+            });
+
+            selectCollector.on('collect', async (selectInteraction) => {
+                const value = selectInteraction.values[0];
+                const [cropId, spiecesId] = value.split(' ').map((v) => parseInt(v));
                 await plantCrop(cropId, spiecesId);
-                await confirmation.update({
-                    content: `Successfully planted crop ${spiecesId} on field ${confirmation.customId}`,
+                selectInteraction.update({
+                    content: `Planted crop ${spiecesId} on field ${cropId}`,
                     components: [],
                 });
-            }
+            });
         } catch (e) {
             await interaction.editReply({
-                content: 'Confirmation not received within 1 minute, cancelling 🧑‍🌾',
+                content: `error ${e}`, //'Confirmation not received within 1 minute, cancelling 🧑‍🌾',
                 components: [],
             });
         }
