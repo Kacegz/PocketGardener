@@ -8,6 +8,7 @@ This is Discord Bot that allows you grow your own **Pocket Garden**.
 - plant - lets you plant in your garden
 - ?check - Lets you check already started operation
 - help - gets a brief description how to use this bot ///after finishing rest
+- feedback - sends informations about how to send feedback or new ideas
 *IN THE FUTURE*
 - ?fertilize - lets you boost your friends crop (shorten its time to grow)
 - ?shop - lets you buy things and shows your money
@@ -19,7 +20,7 @@ This is Discord Bot that allows you grow your own **Pocket Garden**.
 - [X] See your field
 - [ ] Prettify field/buttons
 - [X] Plant a crop
-- [ ] Set a timer after planting
+- [X] Set a timer after planting
 - [ ] Add a crop to the field and message a user
 - [x] Ability to choose crops ///TODO: Remove blank crop after debugging
 ### Extra functionality

@@ -23,7 +23,13 @@ module.exports = {
     plantCrop: async (cropId, newSpieciesId) => {
         await db.crop.update({
             where: { id: cropId },
-            data: { spiecesId: newSpieciesId },
+            data: { spiecesId: newSpieciesId, isGrowing: true, plantedTime: new Date() },
+        });
+    },
+    finishCrop: async (cropId) => {
+        await db.crop.update({
+            where: { id: cropId },
+            data: { isGrowing: false },
         });
     },
 };

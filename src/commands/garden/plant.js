@@ -8,8 +8,8 @@ const {
     StringSelectMenuOptionBuilder,
 } = require('discord.js');
 const { getOrCreateUser } = require('../../garden/user');
-const { getOrCreateField, plantCrop } = require('../../garden/field');
-const { getAllSpieces } = require('../../garden/spieces');
+const { getOrCreateField, plantCrop, finishCrop } = require('../../garden/field');
+const { getAllSpieces, getSpieces } = require('../../garden/spieces');
 module.exports = {
     data: new SlashCommandBuilder().setName('plant').setDescription('Plants a crop on your field'),
     async execute(interaction) {
@@ -20,13 +20,22 @@ module.exports = {
         let crops = [];
         for (let i = 0; i < field.crops.length; i++) {
             const crop = field.crops[i];
-            const icon = crop.spiecies.icon;
-            const button = new ButtonBuilder()
-                .setCustomId(`crop${crop.id}`)
-                .setEmoji(icon)
-                .setStyle(ButtonStyle.Secondary);
-            //crop.spiecesId == 1 ? button.setDisabled(true) : button.setDisabled(false);      // Uncomment this line to disable already planted crops
-            crops.push(button);
+            if (crop.isGrowing) {
+                const growingButton = new ButtonBuilder()
+                    .setCustomId(`crop${crop.id}`)
+                    .setEmoji('🌱')
+                    .setStyle(ButtonStyle.Secondary)
+                    .setDisabled(true);
+                crops.push(growingButton);
+            } else {
+                const icon = crop.spiecies.icon;
+                const button = new ButtonBuilder()
+                    .setCustomId(`crop${crop.id}`)
+                    .setEmoji(icon)
+                    .setStyle(ButtonStyle.Secondary);
+                //crop.spiecesId !== 0? button.setDisabled(true) : button.setDisabled(false);      // Uncomment this line to disable already planted crops
+                crops.push(button);
+            }
             if (i % 5 == 4) {
                 const row = new ActionRowBuilder().addComponents(crops);
                 crops = [];
@@ -56,7 +65,6 @@ module.exports = {
 
         try {
             const collectorFilter = (i) => i.user.id === interaction.user.id;
-
             const buttonCollector = response.createMessageComponentCollector({
                 componentType: ComponentType.Button,
                 filter: collectorFilter,
@@ -91,7 +99,7 @@ module.exports = {
                                 .map((spiece) => {
                                     return new StringSelectMenuOptionBuilder()
                                         .setLabel(spiece.name)
-                                        .setDescription(`50 coins and takes 30 minutes`)
+                                        .setDescription(`50 coins and takes ${spiece.growthDuration / 1000} s`)
                                         .setValue(`${cropId} ${spiece.id}`)
                                         .setEmoji(spiece.icon);
                                 })
@@ -115,11 +123,17 @@ module.exports = {
             selectCollector.on('collect', async (selectInteraction) => {
                 const value = selectInteraction.values[0];
                 const [cropId, spiecesId] = value.split(' ').map((v) => parseInt(v));
+
+                const spieces = await getSpieces(spiecesId);
                 await plantCrop(cropId, spiecesId);
                 selectInteraction.update({
-                    content: `Planted crop ${spiecesId} on field ${cropId}`,
+                    content: `Planted crop ${spiecesId} on field ${cropId}, done in ${spieces.growthDuration / 1000} s`,
                     components: [],
                 });
+
+                setTimeout(async () => {
+                    await finishCrop(cropId);
+                }, spieces.growthDuration);
             });
         } catch (e) {
             await interaction.editReply({

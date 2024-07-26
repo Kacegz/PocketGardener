@@ -1,9 +1,8 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
-
+const { db } = require('./db.js');
+const { finishCrop } = require('./garden/field.js');
 require('dotenv').config();
 
 const token = process.env.DISCORD_TOKEN;
@@ -61,8 +60,23 @@ client.on(Events.InteractionCreate, async (interaction) => {
 // When the client is ready, run this code (only once).
 // The distinction between `client: Client<boolean>` and `readyClient: Client<true>` is important for TypeScript developers.
 // It makes some properties non-nullable.
-client.once(Events.ClientReady, (readyClient) => {
+client.once(Events.ClientReady, async (readyClient) => {
     console.log(`Ready! Logged in as ${readyClient.user.tag}`);
+    const stillGrowing = await db.crop.findMany({
+        where: {
+            isGrowing: true,
+        },
+        include: {
+            spiecies: true,
+        },
+    });
+    stillGrowing.forEach(async (crop) => {
+        const timeLeft = crop.spiecies.growthDuration - (new Date() - crop.plantedTime);
+        setTimeout(async () => {
+            await finishCrop(crop.id);
+        }, timeLeft);
+        console.log(`Set timeout for crop ${crop.id} of ${timeLeft}`);
+    });
 });
 
 // Log in to Discord with your client's token

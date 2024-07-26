@@ -12,8 +12,11 @@ module.exports = {
         let fieldString = '';
         for (let i = 0; i < field.crops.length; i++) {
             const crop = field.crops[i];
-            const icon = crop.spiecies.icon;
-            fieldString += icon + '';
+            if (crop.isGrowing) {
+                fieldString += '🌱';
+            } else {
+                fieldString += crop.spiecies.icon;
+            }
             if (i % 5 == 4) {
                 fieldString += '\n';
             }

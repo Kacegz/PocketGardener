@@ -29,11 +29,14 @@ model Crop {
   fieldId   Int
   spiecies  Spieces @relation(fields: [spiecesId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   spiecesId Int
+  isGrowing Boolean @default(false)
+  plantedTime DateTime @default(now())
 }
 
 model Spieces {
   id    Int    @id @default(autoincrement())
   name  String
   icon  String
+  growthDuration Int @default(1000)
   crops Crop[]
 }
