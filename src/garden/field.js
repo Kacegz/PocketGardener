@@ -27,6 +27,12 @@ module.exports = {
             data: { spiecesId: newSpieciesId, isGrowing: true, plantedTime: new Date(), replyChannel: channelId },
         });
     },
+    removeCrop: async (cropId, channelId) => {
+        await db.crop.update({
+            where: { id: cropId },
+            data: { spiecesId: 0, replyChannel: channelId },
+        });
+    },
     finishCrop: async (cropId) => {
         return await db.crop.update({
             where: { id: cropId },
