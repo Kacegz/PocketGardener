@@ -1,15 +1,6 @@
-const {
-    SlashCommandBuilder,
-    ButtonBuilder,
-    ButtonStyle,
-    ActionRowBuilder,
-    ComponentType,
-    StringSelectMenuBuilder,
-    StringSelectMenuOptionBuilder,
-} = require('discord.js');
+const { SlashCommandBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder, ComponentType } = require('discord.js');
 const { getOrCreateUser } = require('../../garden/user');
-const { getOrCreateField, plantCrop, removeCrop } = require('../../garden/field');
-const { getAllSpieces, getSpieces } = require('../../garden/spieces');
+const { getOrCreateField, removeCrop } = require('../../garden/field');
 module.exports = {
     data: new SlashCommandBuilder().setName('remove').setDescription('Removes a crop from your field'),
     async execute(interaction) {
