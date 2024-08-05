@@ -132,9 +132,10 @@ module.exports = {
                 });
 
                 setTimeout(async () => {
-                    await finishCrop(cropId);
+                    const plant = await finishCrop(cropId);
+                    const spiece = await getSpieces(plant.spiecesId);
                     await selectInteraction.followUp({
-                        content: 'hehe',
+                        content: `Hello <@${user.discord_id}>, your ${spiece.icon} has finished growing.`,
                         ephemeral: true,
                     });
                 }, spieces.growthDuration);
