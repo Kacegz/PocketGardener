@@ -23,6 +23,7 @@ This is Discord Bot that allows you grow your own **Pocket Garden**.
 - [X] Set a timer after planting
 - [X] Add a crop to the field and message a user
 - [x] Ability to choose crops ///TODO: Remove blank crop after debugging
+- [ ] Remove last column for smaller mobile screens
 ### Extra functionality
 - [X] Different crops have different time
 - [ ] Being able to add another field (after filling existing)
