@@ -6,7 +6,6 @@ module.exports = {
     async execute(interaction) {
         const user = await getOrCreateUser(interaction.user.id);
         const field = await getOrCreateField(user.id);
-
         let rows = [];
         let crops = [];
         for (let i = 0; i < field.crops.length; i++) {
@@ -27,7 +26,7 @@ module.exports = {
                 crop.spiecesId == 0 ? button.setDisabled(true) : button.setDisabled(false); // allow removal for crops not grown
                 crops.push(button);
             }
-            if (i % 5 == 4) {
+            if (i % 4 == 3) {
                 const row = new ActionRowBuilder().addComponents(crops);
                 crops = [];
                 rows.push(row);
@@ -41,13 +40,8 @@ module.exports = {
             .setStyle(ButtonStyle.Secondary)
             .setDisabled(true);
         const cancel = new ButtonBuilder().setCustomId('cancel').setEmoji('🙅').setStyle(ButtonStyle.Danger);
-        const blank2 = new ButtonBuilder()
-            .setCustomId('blank2')
-            .setLabel('-')
-            .setStyle(ButtonStyle.Secondary)
-            .setDisabled(true);
         const next = new ButtonBuilder().setCustomId('next').setEmoji('👉').setStyle(ButtonStyle.Primary);
-        const lastRow = new ActionRowBuilder().addComponents(previous, blank1, cancel, blank2, next);
+        const lastRow = new ActionRowBuilder().addComponents(previous, blank1, cancel, next);
         const response = await interaction.reply({
             content: `**Choose a field to remove a crop from**`,
             //ephemeral: true,

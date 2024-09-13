@@ -7,7 +7,7 @@ module.exports = {
             include: { crops: { include: { spiecies: true } } },
         });
         if (!field) {
-            let defaultCrops = Array(20).fill({ spiecesId: 0 });
+            let defaultCrops = Array(16).fill({ spiecesId: 0 });
             field = await db.field.create({
                 data: {
                     userId: userId,

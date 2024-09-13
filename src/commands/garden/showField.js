@@ -17,7 +17,7 @@ module.exports = {
             } else {
                 fieldString += crop.spiecies.icon;
             }
-            if (i % 5 == 4) {
+            if (i % 4 == 3) {
                 fieldString += '\n';
             }
         }
